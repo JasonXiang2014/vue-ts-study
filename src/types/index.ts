@@ -1,10 +1,10 @@
 type Feature = {
     id: number;
-    name: String;
+    name: string;
 }
 
 type Select = {
-    selected: Boolean;
+    selected: boolean;
 }
 
 export type FeatureSelect = Feature & Select

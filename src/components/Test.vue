@@ -1,6 +1,11 @@
 <template>
   <div class="hello">
     <span>{{msg}}</span>
+    <!-- 新增特性 -->
+    <div>
+      <input type="text" @keyup.enter="addFeature" />
+    </div>
+    <!-- 特性列表 -->
     <ul>
       <li
         v-for="feature in features"
@@ -13,16 +18,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue, Emit, Watch } from "vue-property-decorator";
 import { FeatureSelect } from "@/types";
 
 //正常写法是export default { }
 @Component
 export default class Test extends Vue {
-  @Prop() private msg!: string;
+  @Prop({ type: String, required: true })
+  private msg!: string;
 
+  // 属性将成为data中数据
   features: FeatureSelect[] = [];
-
+  watchedString: string = 'defaultWatchedString'
   //   created() {
   //     this.features = [
   //       { id: 1, name: "vue", selected: false },
@@ -34,6 +41,29 @@ export default class Test extends Vue {
     console.log("HelloWorld");
     const resp = await this.$http.get<FeatureSelect[]>("/api/list");
     this.features = resp.data;
+  }
+
+  @Emit()
+  addFeature(e: KeyboardEvent) {
+    // 类型断言
+    const inp = e.target as HTMLInputElement;
+    const feature: FeatureSelect = {
+      id: this.features.length + 1,
+      name: inp.value,
+      selected: false
+    };
+    this.features.push(feature);
+    this.watchedString = feature.name
+    inp.value = "";
+
+    // 告诉老爹添加了一个Feature
+    // 相当于this.$emit('add-feature', feature)
+    return feature;
+  }
+
+  @Watch("watchedString")
+  onMsgChange(val: string, oldVal: any) {
+    console.log(val, oldVal);
   }
 
   //存取器作为计算属性
