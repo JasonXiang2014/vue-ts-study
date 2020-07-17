@@ -15,7 +15,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { FeatureSelect } from "@/types";
-import axios from "axios";
 
 //正常写法是export default { }
 @Component
@@ -33,7 +32,7 @@ export default class Test extends Vue {
 
   async mounted() {
     console.log("HelloWorld");
-    const resp = await axios.get<FeatureSelect[]>("/api/list");
+    const resp = await this.$http.get<FeatureSelect[]>("/api/list");
     this.features = resp.data;
   }
 
